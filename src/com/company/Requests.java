@@ -6,10 +6,10 @@ import org.json.JSONObject;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.Scanner;
 
 public class Requests {
@@ -27,16 +27,36 @@ public class Requests {
         }
     }
 
-    public void getDataForTicker(String ticker){
-        String requestUrl = String.format("https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=%s&interval=5min&apikey=%s", ticker, KEY);
+    public double[] getDoubleDataForTicker(String ticker){
+        String requestUrl = String.format("https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=%s&apikey=%s", ticker, KEY);
         JSONObject json = null;
         try {
             json = new JSONObject(IOUtils.toString(new URL(requestUrl), StandardCharsets.UTF_8));
         } catch (IOException e) {
             e.printStackTrace();
         }
-        System.out.println(json.toString());
-        System.out.println(json.get("Meta Data"));
+
+        json = json.getJSONObject("Time Series (Daily)");
+        Iterator<String> keys = json.keys();
+        JSONObject timeData;
+        int cnt = 0;
+        double value;
+        double[] data = new double[json.length() * 2];
+        while(keys.hasNext()) {
+            String key = keys.next();
+            if (json.get(key) instanceof JSONObject) {
+                timeData = (JSONObject) json.get(key);
+                value = Double.parseDouble(timeData.get("1. open").toString());
+                if(value == 0){
+                    return data;
+                }
+                data[cnt] = value;
+                data[cnt+1] = value;
+                cnt+=2;
+            }
+        }
+
+        return data;
 
     }
 }
