@@ -19,7 +19,7 @@ public class Main {
     }
 
     public static void printChart(double[] data , String ticker){
-        System.out.println("TODAY'S PRICE OF " + ticker); // prints graph header
+        System.out.println("TODAY'S PRICE OF $" + ticker.toUpperCase()); // prints graph header
         System.out.println(ASCIIGraph.fromSeries(data).plot()); // prints graph
     }
 }
