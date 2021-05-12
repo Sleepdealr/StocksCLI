@@ -2,7 +2,7 @@
 
 its a cli for stock data
 
-only does current day (for now)
+does current day and currency/crypto to USD conversion
 
 uses the https://www.alphavantage.co/ api
 
