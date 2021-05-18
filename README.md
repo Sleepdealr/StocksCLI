@@ -2,8 +2,8 @@
 
 its a cli for stock data
 
-does current day and currency/crypto to USD conversion
+does current day graphing and currency/crypto to USD conversion
 
-uses the https://www.alphavantage.co/ api
+uses the https://www.alphavantage.co api
 
-uses ascii-data for display
+uses ascii-data library for display

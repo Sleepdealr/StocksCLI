@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 import java.util.Scanner;
 
 public class Requests {
@@ -31,8 +32,7 @@ public class Requests {
         String requestUrl = String.format("https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=%s&apikey=%s", ticker, KEY); //formats url with apikey and ticker
         JSONObject json = requestJSON(requestUrl);
         if (json.has("Error Message")) { // key is only present in errors
-            System.out.println("Ticker does not exist");
-            return new double[]{Integer.MIN_VALUE}; // returns error value
+            throw new NoSuchElementException("Ticker does not exist");
         }
 
         json = json.getJSONObject("Time Series (Daily)"); // gets all data for the date
@@ -42,7 +42,7 @@ public class Requests {
         double value;
         double[] data = new double[json.length() * 2]; // doubles data for a cleaner looking graph
 
-        while (keys.hasNext()) { //
+        while (keys.hasNext()) {
             String key = keys.next();
             if (json.get(key) instanceof JSONObject) {
                 timeData = (JSONObject) json.get(key); // gets the json object for the time
@@ -70,10 +70,36 @@ public class Requests {
         String requestUrl = String.format("https://www.alphavantage.co/query?function=CURRENCY_EXCHANGE_RATE&from_currency=%s&to_currency=USD&apikey=%s", currency, KEY);
         JSONObject json = requestJSON(requestUrl);
         if (json.has("Error Message")) { // key is only present in errors
-            System.out.println("Currency does not exist");
-            return Integer.MIN_VALUE; // returns error value
+            throw new NoSuchElementException("Cryptocurrency does not exist");
         }
         json = json.getJSONObject("Realtime Currency Exchange Rate");
         return Double.parseDouble(json.get("5. Exchange Rate").toString());
+    }
+
+    public double[] getDoubleDataForCrypto(String currency){
+        String requestUrl = String.format("https://www.alphavantage.co/query?function=CRYPTO_INTRADAY&symbol=%s&market=USD&interval=5min&apikey=%s", currency, KEY); //formats url with apikey and ticker
+        JSONObject json = requestJSON(requestUrl);
+        if (json.has("Error Message")) { // key is only present in errors
+            throw new NoSuchElementException("Cryptocurrency does not exist");
+        }
+
+        json = json.getJSONObject("Time Series Crypto (5min)"); // gets all data for the date
+        Iterator<String> keys = json.keys(); //creates iterator of all keys(time/date values) to allow for iteration
+        JSONObject timeData;
+        int cnt = 0;
+        double value;
+        double[] data = new double[json.length() * 2]; // doubles data for a cleaner looking graph
+
+        while (keys.hasNext()) {
+            String key = keys.next();
+            if (json.get(key) instanceof JSONObject) {
+                timeData = (JSONObject) json.get(key); // gets the json object for the time
+                value = Double.parseDouble(timeData.get("1. open").toString()); // grabs the opening value
+                data[cnt] = value;
+                data[cnt + 1] = value; // doubles data for a cleaner looking graph
+                cnt += 2;
+            }
+        }
+        return data;
     }
 }
