@@ -74,6 +74,7 @@ public class Requests {
         }
         json = json.getJSONObject("Realtime Currency Exchange Rate");
         return Double.parseDouble(json.get("5. Exchange Rate").toString());
+
     }
 
     public double[] getDoubleDataForCrypto(String currency){
