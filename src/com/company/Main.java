@@ -39,7 +39,7 @@ public class Main {
 
     public static void printChart(double[] data, String ticker) {
         System.out.println("TODAY'S PRICE OF $" + ticker); // prints graph header
-        int rows = 15;
+        int rows = 16;
         System.out.println(ASCIIGraph.fromSeries(data).withNumRows(rows).plot()); // prints graph
 
     }
